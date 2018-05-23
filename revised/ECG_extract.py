@@ -3,9 +3,10 @@ import util as utl
 import matplotlib.pyplot as plt
 import sys
 
-from biosppy.signals.ecg import christov_segmenter
+from biosppy.signals.ecg import engzee_segmenter, correct_rpeaks
 from biosppy.signals import tools as st
 from scipy.signal import filtfilt, butter, lfilter, detrend
+from scipy.stats import skew, kurtosis
 
 
 # two rows of ECG data
@@ -26,13 +27,23 @@ def butter_lowpass_filter(data, cutoff, fs, order=5):
     y = lfilter(b, a, data)
     return y
 
+def RMS(data):
+	result = 0
+	for i in range(len(data)):
+		result += data[i]**2
+	result /= len(data)
+	result = np.sqrt(result)
+	return result
+
 ###########################
 ## parameter specification
 ###########################
+features      = []
 sampling_rate = 128.
 signal        = data_ecg[1]
 order         = 5
 cutoff        = 17
+rpeak_tol     = 0.36
 
 # low pass filter
 filtered = butter_lowpass_filter(signal, cutoff, sampling_rate, order)
@@ -41,3 +52,22 @@ filtered = butter_lowpass_filter(signal, cutoff, sampling_rate, order)
 order = 20
 filtered -= filtfilt([1] * order, [order], filtered)  # this is a very simple moving average filter
 
+# Rpeaks
+Rpeaks = engzee_segmenter(signal=filtered, sampling_rate=sampling_rate, threshold=0)['rpeaks']
+Rpeaks = correct_rpeaks(signal=filtered, rpeaks=Rpeaks, sampling_rate=sampling_rate, tol=rpeak_tol)['rpeaks']
+
+# peak to peak intervals
+IBI    = []
+for i in range(1, len(Rpeaks)):
+	IBI.append(Rpeaks[i] - Rpeaks[i-1])
+IBI = np.array(IBI) / sampling_rate
+
+# append features for IBI
+features.append(RMS(IBI))
+features.append(IBI.mean())
+features.append(IBI.std())
+
+# something wrong with these two
+features.append(skew(IBI))
+features.append(kurtosis(IBI))
+print (features)
