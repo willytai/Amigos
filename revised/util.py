@@ -78,3 +78,11 @@ def stat(data):
 	kurt = kurtosis(data)
 	last = above_below_mean_std(data)
 	return [mean, std, Skew, kurt, last]
+
+def norm(data):
+	data = np.array(data)
+	std = data.std()
+	mean = data.mean()
+	for i in range(len(data)):
+		data[i] = (data[i] - mean) / std
+	return data

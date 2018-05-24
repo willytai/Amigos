@@ -3,7 +3,7 @@ import util as utl
 import sys, math
 
 from biosppy.signals import tools as st
-from scipy.signal import stft, welch
+from scipy.signal import welch
 
 filepath = '../../../Kuan/Amigos/data/'
 filename = filepath+sys.argv[1]+'_'+sys.argv[2]+'.csv'
