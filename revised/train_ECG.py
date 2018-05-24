@@ -21,9 +21,10 @@ if len(sys.argv) != 4:
 
 def load(filename):
 	data  = pd.read_csv(filename)
-
-	label   = data.iloc[:, 77:]
-	train   = data.iloc[:, 1:77]
+	rows  = np.arange(1, 1057, 2) # right channel
+	# rows  = np.arange(0, 1056, 2) # left channel
+	label   = data.iloc[rows, 77:]
+	train   = data.iloc[rows, 1:77]
 	return np.array(train), np.array(label)
 
 def norm(data):
@@ -81,7 +82,7 @@ def main():
 
 	############## leave-one-participant out for testing ##############
 	# test over all of the participants
-	kf = KFold(34)
+	kf = KFold(33)
 	leave_one_out = kf.split(train, label)
 
 	##### train #####
@@ -135,9 +136,9 @@ def main():
 
 	########### Average testing accuracy over 39 participants ############
 	print ('\nAverage')
-	print ('Validation Accuracy : %f --- ' % (ave_val / 34 * 100), end='')
-	print ('Testing Accuracy : %f' % (ave_test / 34 * 100))
-	print ('f1_score : ', ave_f1 / 34)
+	print ('Validation Accuracy : %f --- ' % (ave_val / 33 * 100), end='')
+	print ('Testing Accuracy : %f' % (ave_test / 33 * 100))
+	print ('f1_score : ', ave_f1 / 33)
 
 
 if __name__ == '__main__':
