@@ -27,6 +27,9 @@ def butter_lowpass_filter(data, cutoff, fs, order=5):
     y = lfilter(b, a, data)
     return y
 
+####################
+## root mean square
+####################
 def RMS(data):
 	result = 0
 	for i in range(len(data)):
@@ -34,6 +37,20 @@ def RMS(data):
 	result /= len(data)
 	result = np.sqrt(result)
 	return result
+
+#################################################
+## filter out values out of n standard deviation
+#################################################
+def correct(data, n):
+	std  = data.std()
+	mean = data.mean()
+	min  = mean - n*std
+	max  = mean + n*std
+	# assert min > data.min(), 'n is too large'
+	correct = np.array(list(filter(lambda x : min < x and x < max, data)))
+	# print ('range: ({},{})'.format(min,max))
+	# print ('{} value removed'.format(len(data)-len(correct)))
+	return correct
 
 ###########################
 ## parameter specification
@@ -61,13 +78,20 @@ IBI    = []
 for i in range(1, len(Rpeaks)):
 	IBI.append(Rpeaks[i] - Rpeaks[i-1])
 IBI = np.array(IBI) / sampling_rate
+IBI = correct(IBI, 3)
 
 # append features for IBI
 features.append(RMS(IBI))
 features.append(IBI.mean())
 features.append(IBI.std())
-
-# something wrong with these two
 features.append(skew(IBI))
 features.append(kurtosis(IBI))
-print (features)
+
+# heart rate series
+HR = 1 / IBI
+features.append(HR.mean())
+features.append(HR.std())
+features.append(skew(HR))
+features.append(kurtosis(HR))
+
+
