@@ -8,7 +8,7 @@ from sklearn.model_selection import KFold
 from sklearn.metrics import f1_score
 
 if len(sys.argv) != 4:
-	print ('Usage : python3 train_EEG.py <target> <C> <option>')
+	print ('Usage : python3 train_ECG.py <target> <C> <option>')
 	print ('option: \'mean\', \'median\', \'5\'')
 	print ('\nC is the parameter for SVM')
 	print ('target ranges from 0 ~ 9')
@@ -22,8 +22,8 @@ if len(sys.argv) != 4:
 def load(filename):
 	data  = pd.read_csv(filename)
 
-	label   = data.iloc[:,106:]
-	train   = data.iloc[:, 1:106]
+	label   = data.iloc[:, 77:]
+	train   = data.iloc[:, 1:77]
 	return np.array(train), np.array(label)
 
 def norm(data):
@@ -53,7 +53,7 @@ def transform(data, type=None, ref=0):
 	return data, mid_ref
 
 def main():
-	filename     = 'EEG.csv'
+	filename     = 'ECG.csv'
 	train, label = load(filename)
 
 
@@ -64,11 +64,11 @@ def main():
 
 	target = int(sys.argv[1])  # the target to do classification
 
-	sfs    = pickle.load(open('sequence/eeg_{}_11_{}'.format(sys.argv[3], target), 'rb'))
+	# sfs    = pickle.load(open('sequence/eeg_{}_11_{}'.format(sys.argv[3], target), 'rb'))
 	
 
 	############# without selection ###############
-	# sfs = np.arange(0, 105, 1)
+	sfs = np.arange(0, 76, 1)
 
 	print ('Number of features: ', len(sfs))
 

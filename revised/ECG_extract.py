@@ -10,8 +10,11 @@ from scipy.stats import skew, kurtosis
 
 
 # two rows of ECG data
-filename = sys.argv[1]
-data_ecg = utl.load(filename)[:, 14:16].T
+participant = sys.argv[1]
+video       = sys.argv[2]
+# filename    = '../../../Kuan/Amigos/data/'+participant+'_'+video+'.csv'
+filename    = '../database/'+participant+'_'+video+'.csv'
+data_ecg    = utl.load(filename)[:, 14:16].T
 
 ###################
 ## low pass filter
@@ -150,14 +153,20 @@ for i, signal in enumerate(signals):
 		band = sp[band2idx(freq, 0.1*i, 1*(i+1))]
 		target.append(band.sum())
 
-
+# get the label
+label = np.genfromtxt('label.csv', delimiter=',')[:, :2]
+participant = int(sys.argv[1])
+video = int(sys.argv[2])
+label = label[video+16*(participant-1)-1, :]
+participant = str(participant)
+video = str(video)
 
 # check_left = feautres_left[-60:]
 # check_right = feautres_right[-60:]
 # plt.plot(utl.norm(check_right))
 # plt.plot(check_left)
 # plt.show()
-# file = open('ECG.csv', 'a+')
-# file.write(',{}\n'.format(",".join(list(map(str, feautres_left)))))
-# file.write(',{}\n'.format(",".join(list(map(str, feautres_right)))))
+file = open('ECG.csv', 'a+')
+file.write('{},{},{},{}\n'.format(participant+'_'+video+'_left',  ",".join(list(map(str, feautres_left))), label[0], label[1]))
+file.write('{},{},{},{}\n'.format(participant+'_'+video+'_right', ",".join(list(map(str, feautres_right))), label[0], label[1]))
 # file.write(',{}\n'.format(",".join(list(map(str, abs(np.array(feautres_right) - np.array(feautres_left)))))))

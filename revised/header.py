@@ -17,6 +17,7 @@ elif sys.argv[1] == 'ECG':
 	header = ',rms_IBI,mean_IBI,std_IBI,skew_IBI,kur_IBI,mean+-std_IBI,mean_HR,std_HR,HRV,skew_HR,kur_HR,mean+-std_HR,low,mid,high,LF/HF'
 	for i in range(60):
 		header += ',sp 0-6'
+	header += ',arousal,valence'
 	file = open('ECG.csv', 'a+')
 	file.write(header+'\n')
 	file.close()

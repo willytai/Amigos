@@ -4,7 +4,7 @@ for participant in $(seq 1 8)
 do
     for video in $(seq 1 16)
     do 
-        python3 EEG_extract.py ${participant} ${video}
+        python3 ECG_extract.py ${participant} ${video}
     done
 done
 
@@ -13,7 +13,7 @@ for participant in $(seq 10 11)
 do
     for video in $(seq 1 16)
     do 
-        python3 EEG_extract.py ${participant} ${video}
+        python3 ECG_extract.py ${participant} ${video}
     done
 done
 
@@ -22,7 +22,7 @@ for participant in $(seq 13 20)
 do
     for video in $(seq 1 16)
     do 
-        python3 EEG_extract.py ${participant} ${video}
+        python3 ECG_extract.py ${participant} ${video}
     done
 done
 
@@ -31,7 +31,7 @@ for participant in $(seq 25 32)
 do
     for video in $(seq 1 16)
     do 
-        python3 EEG_extract.py ${participant} ${video}
+        python3 ECG_extract.py ${participant} ${video}
     done
 done
 
@@ -40,6 +40,6 @@ for participant in $(seq 34 40)
 do
     for video in $(seq 1 16)
     do 
-        python3 EEG_extract.py ${participant} ${video}
+        python3 ECG_extract.py ${participant} ${video}
     done
 done
