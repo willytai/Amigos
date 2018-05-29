@@ -21,10 +21,9 @@ if len(sys.argv) != 4:
 
 def load(filename):
 	data  = pd.read_csv(filename)
-	rows  = np.arange(1, 1057, 2) # right channel
-	# rows  = np.arange(0, 1056, 2) # left channel
-	label   = data.iloc[rows, 77:]
-	train   = data.iloc[rows, 1:77]
+
+	label   = data.iloc[:, 77:]
+	train   = data.iloc[:, 1:77]
 	return np.array(train), np.array(label)
 
 def norm(data):
@@ -54,7 +53,7 @@ def transform(data, type=None, ref=0):
 	return data, mid_ref
 
 def main():
-	filename     = 'ECG.csv'
+	filename     = 'ECG_norm_power.csv'
 	train, label = load(filename)
 
 
@@ -65,11 +64,11 @@ def main():
 
 	target = int(sys.argv[1])  # the target to do classification
 
-	# sfs    = pickle.load(open('sequence/eeg_{}_11_{}'.format(sys.argv[3], target), 'rb'))
+	sfs    = pickle.load(open('sequence/ecg_{}_01_{}'.format(sys.argv[3], target), 'rb'))
 	
 
 	############# without selection ###############
-	sfs = np.arange(0, 76, 1)
+	# sfs = np.arange(0, 76, 1)
 
 	print ('Number of features: ', len(sfs))
 
@@ -77,7 +76,7 @@ def main():
 	train = train[:, sfs]
 
 	############## normaliation ##############
-	train = norm(train)
+	# train[:, :17] = norm(train[:, :17])
 
 
 	############## leave-one-participant out for testing ##############
