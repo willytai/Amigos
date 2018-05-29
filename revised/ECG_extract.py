@@ -47,10 +47,10 @@ def RMS(data):
 def correct(data, n):
 	std  = data.std()
 	mean = data.mean()
-	min  = mean - n*std
-	max  = mean + n*std
+	minn = mean - n*std
+	maxx = mean + n*std
 	# assert min > data.min(), 'n is too large'
-	correct = np.array(list(filter(lambda x : min < x and x < max, data)))
+	correct = np.array(list(filter(lambda x : minn < x and x < maxx, data)))
 	# print ('range: ({},{})'.format(min,max))
 	# print ('{} value removed'.format(len(data)-len(correct)))
 	return correct

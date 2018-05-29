@@ -44,7 +44,7 @@ def transform(data, type=None, ref=0):
 	return data, mid_ref
 
 def main():
-	options      = ['mean', 'median', '5']
+	options      = ['mean'] #, '5', 'median']
 	targets      = [0, 1]
 	selections   = ['00', '01', '10', '11']
 	filename     = 'ECG.csv'
@@ -91,11 +91,11 @@ def main():
 				train_y = label[:, target].reshape(-1)
 
 				sfs = SFS(clf,
-						  k_features=(10,40),
+						  k_features=(8,40),
 						  forward=forward,
 						  floating=floating,
 						  scoring='accuracy',
-						  cv=4,        
+						  cv=2,   
 						  n_jobs=-1,
 						  verbose=2)
 
