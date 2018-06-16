@@ -23,8 +23,8 @@ elif sys.argv[1] == 'ECG':
 	file.close()
 
 elif sys.argv[1] == 'GSR':
-	header = ',mean_GSR,mean_diff1,mean_diff2,mean_diff_neg,pro_neg,local_min,ave_rise,sp 0-2.4,sp 0-2.4,sp 0-2.4,sp 0-2.4,sp 0-2.4,sp 0-2.4,sp 0-2.4,sp 0-2.4,sp 0-2.4,sp 0-2.4,sp 0-2.4,sp 0-2.4,mean_SC,std_SC,mean_SCSR,std_SCSR,SCSR_diff1,SCSR_diff2,mean_SCVSR,std_SCVSR,SCVSR_diff1,SCVSR_diff2,ZC_SCSR,ZC_SCVSR'
+	header = ',mean_GSR,mean_diff1,mean_diff2,mean_diff_neg,pro_neg,local_min,ave_rise,sp 0-2.4,sp 0-2.4,sp 0-2.4,sp 0-2.4,sp 0-2.4,sp 0-2.4,sp 0-2.4,sp 0-2.4,sp 0-2.4,sp 0-2.4,sp 0-2.4,sp 0-2.4,mean_SC,std_SC,mean_SCSR,std_SCSR,SCSR_diff1,SCSR_diff2,mean_SCVSR,std_SCVSR,SCVSR_diff1,SCVSR_diff2,ZC_SCSR,ZC_SCVSR,mag_scsr,mag_scvsr'
 	header += ',arousal,valence'
-	file = open('GSR.csv', 'a+')
+	file = open('GSR_v2.csv', 'a+')
 	file.write(header+'\n')
 	file.close()

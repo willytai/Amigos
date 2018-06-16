@@ -2,10 +2,11 @@ import numpy as np
 import util as utl
 import sys, math
 
+import matplotlib.pyplot as plt
 from biosppy.signals import tools as st
 from scipy.signal import welch
 
-filepath = '../../../Kuan/Amigos/data/'
+filepath = '../database/'
 filename = filepath+sys.argv[1]+'_'+sys.argv[2]+'.csv'
 data_eeg = utl.load(filename)[:, 0:14]
 
@@ -38,6 +39,10 @@ b, a = st.get_filter(ftype='butter',
 					 sampling_rate=rate)
 
 filtered, _ = st._filter_signal(b, a, signal=aux, check_phase=True, axis=0)
+
+plt.plot(signal[:, 0])
+plt.plot(filtered[:, 0])
+plt.show(); sys.exit()
 
 
 # returns the index of a specific band

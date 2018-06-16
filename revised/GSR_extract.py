@@ -1,14 +1,16 @@
 import sys, math
 import util as utl
 import numpy as np
+import neurokit as nk
 import matplotlib.pyplot as plt
+
 from scipy.signal import butter, lfilter, detrend, welch, periodogram
 from peakutils import indexes
 
 participant = sys.argv[1]
 video       = sys.argv[2]
 filename    = '../database/'+participant+'_'+video+'.csv'
-print (filename)
+print ('\n')
 
 ######################
 ## zero crossing rate
@@ -95,7 +97,7 @@ diff = np.diff(signal)
 
 # mean of first and second derivative
 features.append(diff.mean())
-features.append(np.diff(diff).mean())
+# features.append(np.diff(diff).mean())
 # header.append('mean_diff1')
 # header.append('mean_diff2')
 
@@ -113,43 +115,69 @@ features.append(count/len(diff))
 # header.append('mean_diff_neg')
 # header.append('pro_neg')
 
+
+
+######################################################################################
+onsets, peaks, amp, recover = nk.eda_scr(detrend(signal), sampling_rate, treshold=1, method='fast')
+
+rise = peaks - onsets
+rise = np.array(list(filter(lambda x : x > sampling_rate, rise)))
+
+plt.plot(signal)
+plt.scatter(onsets, signal[onsets], c='r')
+plt.scatter(peaks, signal[peaks], c='g')
+plt.show()
+
+print (rise.shape[0])
+print (rise.mean())
+
+features.append(rise.shape[0])
+features.append(rise.mean())
+
+sys.exit()
+
+
+######################################################################################
 # local minima, ave rise
-signal_ex = detrend(signal)
-test_min  = []
-test_max  = []
-local_max = indexes( signal_ex, thres=0.23, min_dist=300)
-local_min = indexes(-signal_ex, thres=0.23, min_dist=300)
+# signal_ex = detrend(signal)
+# test_min  = []
+# test_max  = []
+# local_max = indexes( signal_ex, thres=0.23, min_dist=300)
+# local_min = indexes(-signal_ex, thres=0.23, min_dist=300)
 
-for minn, min_id in enumerate(local_min):
-	if len(local_max) == 0:
-		break;
+# for minn, min_id in enumerate(local_min):
+# 	if len(local_max) == 0:
+# 		break;
 
-	while local_max[0]-300 < min_id:
-		local_max = local_max[1:]
-		if len(local_max) == 0:
-			break
-	if len(local_max) == 0:
-		break
+# 	while local_max[0]-300 < min_id:
+# 		local_max = local_max[1:]
+# 		if len(local_max) == 0:
+# 			break
+# 	if len(local_max) == 0:
+# 		break
 
-	if minn < len(local_min)-1 and local_max[0] > local_min[minn+1]:
-		continue
+# 	if minn < len(local_min)-1 and local_max[0] > local_min[minn+1]:
+# 		continue
 
-	# local max < local min, skip
-	if signal_ex[local_max[0]] - signal_ex[min_id] < 0:
-		continue
+# 	# local max < local min, skip
+# 	if signal_ex[local_max[0]] - signal_ex[min_id] < 0:
+# 		continue
 
-	test_min.append(min_id)
-	test_max.append(local_max[0])
-	local_max = local_max[1:]
+# 	test_min.append(min_id)
+# 	test_max.append(local_max[0])
+# 	local_max = local_max[1:]
 
-test_min = np.array(test_min)
-test_max = np.array(test_max)
-ave_rise = test_max - test_min
-ave_rise = ave_rise.mean()
-features.append(len(test_max))
-features.append(ave_rise)
-# header.append('local_min')
-# header.append('ave_rise')
+# test_min = np.array(test_min)
+# test_max = np.array(test_max)
+# ave_rise = test_max - test_min
+# ave_rise = ave_rise.mean()
+# features.append(len(test_max))
+# features.append(ave_rise)
+# # header.append('local_min')
+# # header.append('ave_rise')
+
+
+######################################################################################
 
 # spectral power 0-2.4
 signal_p = butter_lowpass_filter(signal, 2.4, sampling_rate, order=5)
@@ -203,16 +231,20 @@ features.append(diff2.mean())
 # zero crossing rate for SCSR and SCVSR
 SCSR_detrend  = detrend(SC_lowpassed)
 SCVSR_detrend = detrend(SC_vlowpassed)
-ZC_SCSR       = ZeroCR(SCSR_detrend,  1000, 0).reshape(-1).mean()
-ZC_SCVSR      = ZeroCR(SCVSR_detrend, 1000, 0).reshape(-1).mean()
+ZC_SCSR       = ZeroCR(SCSR_detrend,  int(128*5), 0).reshape(-1).mean()
+ZC_SCVSR      = ZeroCR(SCVSR_detrend, int(128*5), 0).reshape(-1).mean()
+features.append(ZC_SCSR)
+features.append(ZC_SCVSR)
+# header.append('ZC_SCSR')
+# header.append('ZC_SCVSR')
 
 # magnitude of SCSR and SCVSR peak
 peak_scsr  = indexes(SC_lowpassed,  thres=0.7, min_dist=500)
 peak_scvsr = indexes(SC_vlowpassed, thres=0.7, min_dist=500)
 features.append(SC_lowpassed[peak_scsr].mean())
 features.append(SC_vlowpassed[peak_scvsr].mean())
-# header.append('ZC_SCSR')
-# header.append('ZC_SCVSR')
+# header.append('mag_scsr')
+# header.append('mag_scvsr')
 
 # get the label
 label = np.genfromtxt('label.csv', delimiter=',')[:, :2]
@@ -223,5 +255,5 @@ participant = str(participant)
 video = str(video)
 
 # write to file
-file = open('GSR.csv', 'a+')
+file = open('GSR_v2.csv', 'a+')
 file.write('{},{},{},{}\n'.format(participant+'_'+video, ",".join(list(map(str, features))), label[0], label[1]))

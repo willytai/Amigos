@@ -11,10 +11,10 @@ from sklearn.neighbors import KNeighborsClassifier
 
 def load(filename):
 	data  = pd.read_csv(filename)
-	rows  = np.arange(1, 1057, 2) # right channel
+	# rows  = np.arange(1, 1057, 2) # right channel
 	# rows  = np.arange(0, 1056, 2) # left channel
-	label   = data.iloc[rows, 77:]
-	train   = data.iloc[rows, 1:77]
+	label   = data.iloc[:, 77:]
+	train   = data.iloc[:, 1:77]
 	return np.array(train), np.array(label)
 
 def norm(data):
@@ -91,7 +91,7 @@ def main():
 				train_y = label[:, target].reshape(-1)
 
 				sfs = SFS(clf,
-						  k_features=(8,40),
+						  k_features='best',
 						  forward=forward,
 						  floating=floating,
 						  scoring='accuracy',
