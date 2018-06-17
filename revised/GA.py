@@ -12,6 +12,8 @@ if len(sys.argv) != 2:
 	print ('target: 0 for Arousal')
 	print ('        1 for Valence')
 	sys.exit()
+else:
+	print ('Make sure the correct file is used!!')
 
 target = int(sys.argv[1])
 
@@ -24,12 +26,13 @@ def norm(data):
 	return data
 
 def load(filename):
-	data  = pd.read_csv(filename)
-	train = data.iloc[:, 1:]
-	label = pd.read_csv('GSR.csv')
-	label = label.iloc[:, -2:]
+	data   = pd.read_csv(filename)
+	header = list(data); del header[0]
+	train  = data.iloc[:, 1:-2]
+	# label  = pd.read_csv('GSR.csv')
+	label  = data.iloc[:, -2:]
 
-	return norm(np.array(train)), np.array(label)
+	return np.array(train), np.array(label), header
 
 def random_0_1(size):
 	return np.random.randint(2, size=size)
@@ -241,9 +244,34 @@ def mutation(offspring, mutation_rate):
 
 	return offspring
 
+def print_info(individuals, header):
+	f = {}
+	for ind in individuals:
+		for i in range(ind[0].shape[0]):
+			if header[i] not in f:
+				f[header[i]] = ind[0][i]
+			else:
+				f[header[i]] = f[header[i]] + ind[0][i]
+	ff = sorted(f.items(), key=lambda x: x[1], reverse=True)
+
+	print ('')
+	print ('===== Top 20 Features =====')
+	for i in range(20):
+		print (ff[i][0])
+	print ('')
+
+	print ('========== Stats ==========')
+	print ('Average Score: ', np.array([h[1] for h in individuals]).mean())
+	print ('Best Score:    ', np.array([h[1] for h in individuals]).max())
+	print ('')
+
+
 def main():
-	filename     = 'f_GSR.csv'
-	train, label = load(filename)
+	filename             = 'EEG.csv'
+	train, label, header = load(filename)
+
+	# normalize when testing eeg and gsr
+	train = norm(train)
 	
 	###############
 	## parameters
@@ -276,9 +304,12 @@ def main():
 			gene.append(ind[0])
 			f1.append(ind[1])
 		gene = np.array(gene)
-		np.save('gene_gsr_{}.npy'.format(target), gene)
+		np.save('gene_eeg_{}.npy'.format(target), gene)
 		history.append(np.array(f1).mean())
-		np.save('history_gsr_{}.npy'.format(target), np.array(history))
+		np.save('history_eeg_{}.npy'.format(target), np.array(history))
+
+		# show some information
+		print_info(individuals, header)
 
 
 		# selection
